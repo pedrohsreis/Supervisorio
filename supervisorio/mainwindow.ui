@@ -105,7 +105,7 @@
    <cursorShape>ArrowCursor</cursorShape>
   </property>
   <property name="windowTitle">
-   <string>NAO Supervisory</string>
+   <string>Rinobot SPL Supervisory</string>
   </property>
   <property name="windowIcon">
    <iconset>
