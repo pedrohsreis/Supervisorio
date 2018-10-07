@@ -2,6 +2,9 @@
 #include "ui_mainwindow.h"
 #include <QDebug>
 #include <QMessageBox>
+#include <QFile>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -17,6 +20,8 @@ MainWindow::MainWindow(QWidget *parent) :
     selectedRobot = "nao01.local";
     selectedToolchain = "robo";
     codeReleasePath = "/home/alexander/Development/Rinobot/Mari";
+
+    loadModules();
 }
 
 MainWindow::~MainWindow()
@@ -52,9 +57,101 @@ void MainWindow::processStarted()
     qDebug() << "Proc Started";
 }
 
+void MainWindow::loadModules()
+{
+    QFile readfile(codeReleasePath + "/root/home/nao/data/config.json");
+    if (!readfile.open(QIODevice::ReadOnly))
+    {
+        qWarning("Não foi possível atualizar os módulos");
+        return;
+    }
+    QByteArray saveData = readfile.readAll();
+    readfile.close();
+
+
+    QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
+
+    QJsonObject json = loadDoc.object();
+
+    if(!json.contains("Modules"))
+        json.insert("Modules", QJsonObject());
+
+    QJsonObject modules = json["Modules"].toObject();
+
+    loadModule(modules, "Motion", ui->chkMotion);
+    loadModule(modules, "Perception", ui->chkPerception);
+    loadModule(modules, "Strategy", ui->chkStrategy);
+    loadModule(modules, "Remote", ui->chkRemoteControl);
+    loadModule(modules, "Network", ui->chkNetwork);
+}
+
+void MainWindow::loadModule(QJsonObject &modules, QString moduleName, QCheckBox *checkbox)
+{
+    if(modules.contains(moduleName))
+    {
+        QJsonObject module = modules[moduleName].toObject();
+        if(module.contains("Enabled"))
+            checkbox->setChecked(module["Enabled"].toBool());
+        else
+            checkbox->setChecked(true);
+    }
+    else
+        checkbox->setChecked(true);
+}
+
+void MainWindow::saveModules()
+{
+    QFile readfile(codeReleasePath + "/root/home/nao/data/config.json");
+    if (!readfile.open(QIODevice::ReadOnly))
+    {
+        qWarning("Não foi possível atualizar os módulos");
+        return;
+    }
+    QByteArray saveData = readfile.readAll();
+    readfile.close();
+
+
+    QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
+
+    QJsonObject json = loadDoc.object();
+
+    if(!json.contains("Modules"))
+        json.insert("Modules", QJsonObject());
+
+    QJsonObject modules = json["Modules"].toObject();
+
+    // Motion
+    saveModule(modules, "Motion", ui->chkMotion);
+    saveModule(modules, "Perception", ui->chkPerception);
+    saveModule(modules, "Strategy", ui->chkStrategy);
+    saveModule(modules, "Remote", ui->chkRemoteControl);
+    saveModule(modules, "Network", ui->chkNetwork);
+
+    json["Modules"] = modules;
+
+    QFile writefile(codeReleasePath + "/root/home/nao/data/config.json");
+    if (!writefile.open(QIODevice::WriteOnly))
+    {
+        qWarning("Não foi possível atualizar os módulos");
+        return;
+    }
+    QJsonDocument saveDoc(json);
+    writefile.write(saveDoc.toJson());
+    writefile.close();
+}
+
+void MainWindow::saveModule(QJsonObject &modules, QString moduleName, QCheckBox *checkbox)
+{
+    if(!modules.contains(moduleName))
+        modules.insert(moduleName, QJsonObject());
+    QJsonObject module = modules[moduleName].toObject();
+    module["Enabled"] = checkbox->isChecked();
+    modules[moduleName] = module;
+}
 
 void MainWindow::on_btnInstall_clicked()
 {
+    saveModules();
     QString program = "bash";
     QStringList arguments;
     arguments << "-c" << "cd "+ codeReleasePath + "; ./sync.sh " + selectedRobot + " " + selectedToolchain;

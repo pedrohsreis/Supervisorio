@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QProcess>
+#include <QCheckBox>
 
 namespace Ui {
 class MainWindow;
@@ -33,6 +34,10 @@ private:
     QString selectedRobot;
     QString selectedToolchain;
 
+    void loadModules();
+    void loadModule(QJsonObject &modules, QString moduleName, QCheckBox *checkbox);
+    void saveModules();
+    void saveModule(QJsonObject &modules, QString moduleName, QCheckBox *checkbox);
     void executeProcess(QString program, QStringList arguments);
 };
 
