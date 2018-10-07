@@ -161,7 +161,7 @@
                 <property name="maximumSize">
                  <size>
                   <width>16777215</width>
-                  <height>60</height>
+                  <height>54</height>
                  </size>
                 </property>
                 <property name="title">
@@ -181,12 +181,19 @@
                   <number>0</number>
                  </property>
                  <item>
-                  <widget class="QTextEdit" name="TECodeRelease"/>
+                  <widget class="QTextEdit" name="teCodeRelease"/>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="pushButton">
+                  <widget class="QPushButton" name="btnSelectCodeRelease">
                    <property name="text">
                     <string>Open</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="btnDownloadGithub">
+                   <property name="text">
+                    <string>Download</string>
                    </property>
                   </widget>
                  </item>
@@ -322,35 +329,35 @@
                 </property>
                 <layout class="QHBoxLayout" name="layoutCodeActions">
                  <item>
-                  <widget class="QPushButton" name="pushButton_2">
+                  <widget class="QPushButton" name="btnCompile">
                    <property name="text">
                     <string>Compile</string>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="pushButton_6">
+                  <widget class="QPushButton" name="btnConfigure">
                    <property name="text">
                     <string>Configure</string>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="pushButton_3">
+                  <widget class="QPushButton" name="btnInstall">
                    <property name="text">
                     <string>Install</string>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="pushButton_4">
+                  <widget class="QPushButton" name="btnUninstall">
                    <property name="text">
                     <string>Uninstall</string>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QPushButton" name="pushButton_5">
+                  <widget class="QPushButton" name="btnClear">
                    <property name="text">
                     <string>Clear</string>
                    </property>
@@ -439,7 +446,7 @@
                     <property name="geometry">
                      <rect>
                       <x>0</x>
-                      <y>-91</y>
+                      <y>-89</y>
                       <width>160</width>
                       <height>194</height>
                      </rect>
@@ -722,6 +729,12 @@
          <size>
           <width>0</width>
           <height>100</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>200</height>
          </size>
         </property>
         <property name="frameShape">
