@@ -22,10 +22,14 @@ MainWindow::MainWindow(QWidget *parent) :
     codeReleasePath = "/home/alexander/Development/Rinobot/Mari";
 
     loadModules();
+
+    robotManager.setWidget(ui->treeRobots);
+    robotManager.startSearch();
 }
 
 MainWindow::~MainWindow()
 {
+    robotManager.stopSearch();
     delete ui;
 }
 

@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QProcess>
 #include <QCheckBox>
+#include "robotmanager.h"
 
 namespace Ui {
 class MainWindow;
@@ -33,6 +34,8 @@ private:
     QString codeReleasePath;
     QString selectedRobot;
     QString selectedToolchain;
+
+    RobotManager robotManager;
 
     void loadModules();
     void loadModule(QJsonObject &modules, QString moduleName, QCheckBox *checkbox);
