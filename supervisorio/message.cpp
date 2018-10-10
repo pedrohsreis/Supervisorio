@@ -82,5 +82,5 @@ QString &Message::getMessage()
 
 QString Message::toString()
 {
-
+    return message;
 }
