@@ -178,3 +178,12 @@ void MainWindow::on_btnUninstall_clicked()
         executeProcess(program, arguments);
     }
 }
+
+void MainWindow::on_treeRobots_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
+{
+    if(current != nullptr)
+        selectedRobot = current->text(0);
+    else
+        selectedRobot = "127.0.0.1";
+    qDebug() << "Current robot:" << selectedRobot;
+}

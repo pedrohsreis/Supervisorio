@@ -28,6 +28,8 @@ private slots:
 
     void on_btnUninstall_clicked();
 
+    void on_treeRobots_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+
 private:
     Ui::MainWindow *ui;
     QProcess process;
