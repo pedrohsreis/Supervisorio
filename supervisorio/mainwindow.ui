@@ -683,26 +683,6 @@
                <string>ROBOTS</string>
               </property>
              </column>
-             <item>
-              <property name="text">
-               <string>NAO 1</string>
-              </property>
-              <item>
-               <property name="text">
-                <string>CONNECTION</string>
-               </property>
-              </item>
-             </item>
-             <item>
-              <property name="text">
-               <string>NAO 2</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>NAO 3</string>
-              </property>
-             </item>
             </widget>
            </item>
           </layout>

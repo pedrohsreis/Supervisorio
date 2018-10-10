@@ -4,20 +4,32 @@
 #include <QList>
 #include <QTreeWidget>
 #include <QThread>
+#include <QHostInfo>
 #include "robot.h"
 
-class RobotManagerWorker : public QObject
+class RobotManagerWorker : public QThread
 {
     Q_OBJECT
 
     private:
+        bool keepRunning, search;
         QList<Robot> *robots;
+        QList<QString> addresses;
+
+        void findAddress();
+        void findRobots();
+        void createRobot(QString hostname, QString ip);
+        int findRobotIndex(QString ip);
+        void clearRobots();
     public:
         RobotManagerWorker(QList<Robot> *robots);
 
-    public slots:
-        void doWork();
+        void run() override;
 
+        bool isSearching();
+        void startSearch();
+        void stopSearch();
+        void stopRun();
     signals:
         void resultReady();
 };
@@ -27,7 +39,7 @@ class RobotManager : public QObject
     Q_OBJECT
     private:
         QList<Robot> robots;
-        QThread thread;
+        RobotManagerWorker *worker;
         bool running;
         QTreeWidget *listWidget;
     public:
@@ -42,8 +54,6 @@ class RobotManager : public QObject
 
     public slots:
         void handleResults();
-    signals:
-        void operate();
 };
 
 #endif // ROBOTMANAGER_H

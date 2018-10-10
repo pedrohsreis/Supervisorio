@@ -21,7 +21,6 @@ void RobotManagerWorker::run()
         {
             findAddress();
             findRobots();
-            clearRobots();
             emit resultReady();
         }
         qDebug() << "Work";
@@ -56,7 +55,7 @@ void RobotManagerWorker::findRobots()
     for(int i = 0; i < addresses.size(); i++)
     {
         QString base = addresses[i];
-        for(int j = 0; j < 11; j++)
+        for(int j = 0; j < 256; j++)
         {
             QString ip = (base + ".%1").arg(j);
             int exitCode = QProcess::execute("ping", QStringList() << parameter << ip);
@@ -69,43 +68,15 @@ void RobotManagerWorker::findRobots()
     }
 }
 
-void RobotManagerWorker::createRobot(QString hostname, QString ip)
+void RobotManagerWorker::createRobot(QHostInfo &info)
 {
-    int index = findRobotIndex(ip);
-    if(index == -1)
-    {
-        Robot robot;
-        robot.ip = ip;
-        robot.hostName = hostname;
-        robot.updated = true;
-        robots->append(robot);
-    }
-    else
-    {
-        (*robots)[index].updated = true;
-    }
+    qDebug() << info.hostName();
+    int index = findRobotIndex(info.hostName());
 }
 
 int RobotManagerWorker::findRobotIndex(QString ip)
 {
-    for(int i = 0; i < robots->size(); i++)
-    {
-        if((*robots)[i].ip == ip)
-            return i;
-    }
     return -1;
-}
-
-void RobotManagerWorker::clearRobots()
-{
-    QList<Robot>::iterator it = robots->begin();
-    while (it != robots->end())
-    {
-        if(!it->updated)
-            it = robots->erase(it);
-        else
-            it++;
-    }
 }
 
 bool RobotManagerWorker::isSearching()
@@ -175,13 +146,6 @@ void RobotManager::handleResults()
 {
     if(listWidget != nullptr)
     {
-        listWidget->clear();
-        for(int i = 0; i < robots.size(); i++)
-        {
-            QTreeWidgetItem *robot = new QTreeWidgetItem();
-            robot->setText(0, robots[i].hostName);
-            listWidget->addTopLevelItem(robot);
-        }
         qDebug() << "Add";
     }
 }

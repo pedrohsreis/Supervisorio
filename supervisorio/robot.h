@@ -12,6 +12,7 @@ typedef struct
     int maxTemperature;
     int wifiSignal;
     bool wifiConnected;
+    bool updated;
 }Robot;
 
 #endif // ROBOT_H
