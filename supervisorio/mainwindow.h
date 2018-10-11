@@ -32,6 +32,8 @@ private slots:
 
     void on_comboToolchain_activated(const QString &arg1);
 
+    void on_btnAddRobot_clicked();
+
 private:
     void closeEvent(QCloseEvent *bar);
 

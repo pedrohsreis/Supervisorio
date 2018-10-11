@@ -15,6 +15,8 @@ class RobotManagerWorker : public QThread
         bool keepRunning, search;
         QList<Robot> *robots;
 
+        QString manualRobot;
+
         void findAddress();
         void checkRobot(QString ip);
         void createRobot(QString hostname, QString ip);
@@ -29,6 +31,8 @@ class RobotManagerWorker : public QThread
         void startSearch();
         void stopSearch();
         void stopRun();
+
+        bool addRobot(QString ip);
     signals:
         void resultReady();
 };
@@ -50,6 +54,8 @@ class RobotManager : public QObject
         void setWidget(QTreeWidget *listWidget);
         void startSearch();
         void stopSearch();
+
+        bool addRobot(QString ip);
 
     public slots:
         void handleResults();

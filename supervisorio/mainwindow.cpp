@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     selectedRobot = "127.0.0.1";
     findToolchains();
+    load();
     loadModules();
 
     robotManager.setWidget(ui->treeRobots);
@@ -273,7 +274,6 @@ void MainWindow::save()
 
 
 
-    // Motion
     saveSetting(json, "codeReleasePath", codeReleasePath);
     saveSetting(json, "toolchain", selectedToolchain);
 
@@ -298,4 +298,13 @@ void MainWindow::saveSetting(QJsonObject &json, QString name, QString value)
 void MainWindow::closeEvent(QCloseEvent *bar)
 {
     save();
+}
+
+void MainWindow::on_btnAddRobot_clicked()
+{
+    QString ip = ui->edRobotIp->text();
+    if(!robotManager.addRobot(ip))
+    {
+
+    }
 }

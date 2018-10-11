@@ -18,10 +18,15 @@ void RobotManagerWorker::run()
         if(search)
         {
             findAddress();
+            if(!manualRobot.isNull() && !manualRobot.isEmpty())
+            {
+                checkRobot(manualRobot);
+                manualRobot = "";
+            }
             clearRobots();
             emit resultReady();
         }
-        QThread::sleep(10);
+        QThread::sleep(2);
     }
 }
 
@@ -43,7 +48,7 @@ void RobotManagerWorker::findAddress()
     for (int i = 0; i < lines.size(); i++)
     {
         QString line = lines[i].trimmed();
-        if(line.at(0).isDigit())
+        if(line.length() > 0 && line.at(0).isDigit())
         {
             QString ip = line.left(line.indexOf(' '));
             checkRobot(ip);
@@ -54,7 +59,8 @@ void RobotManagerWorker::findAddress()
 void RobotManagerWorker::checkRobot(QString ip)
 {
     QHostInfo info = QHostInfo::fromName(ip);
-    createRobot(info.hostName(), ip);
+    if(info.addresses().size() > 0)
+        createRobot(info.hostName(), info.addresses().first().toString());
 }
 
 void RobotManagerWorker::createRobot(QString hostname, QString ip)
@@ -115,6 +121,12 @@ void RobotManagerWorker::stopSearch()
 void RobotManagerWorker::stopRun()
 {
     keepRunning = false;
+}
+
+bool RobotManagerWorker::addRobot(QString ip)
+{
+    manualRobot = ip;
+    return true;
 }
 
 RobotManager::RobotManager()
@@ -200,3 +212,9 @@ void RobotManager::handleResults()
         }
     }
 }
+
+bool RobotManager::addRobot(QString ip)
+{
+    return worker->addRobot(ip);
+}
+
