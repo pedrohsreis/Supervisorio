@@ -17,12 +17,14 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     message.cpp \
     robotmanager.cpp \
-    logger.cpp
+    logger.cpp \
+    tcpclient.cpp
 
 HEADERS  += mainwindow.h \
     robot.h \
     message.h \
     robotmanager.h \
-    logger.h
+    logger.h \
+    tcpclient.h
 
 FORMS    += mainwindow.ui

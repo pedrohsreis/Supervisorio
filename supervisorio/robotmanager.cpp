@@ -183,7 +183,6 @@ void RobotManager::handleResults()
             if(items.size() > 0)
             {
                 items[0]->setText(0, robots[i].hostName);
-                Logger::log("Robot updated "+robots[i].hostName);
             }
             else
             {

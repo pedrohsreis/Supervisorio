@@ -135,7 +135,7 @@
            <bool>true</bool>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="tabActions">
            <attribute name="title">
@@ -464,23 +464,7 @@
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_5">
                  <item>
-                  <widget class="QComboBox" name="comboCameraImage">
-                   <item>
-                    <property name="text">
-                     <string>Change Image</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Edit Image</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Delete Image</string>
-                    </property>
-                   </item>
-                  </widget>
+                  <widget class="QComboBox" name="comboCameraImage"/>
                  </item>
                  <item>
                   <widget class="QScrollArea" name="scrollArea_2">

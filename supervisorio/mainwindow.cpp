@@ -15,13 +15,19 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    Logger::Init();
+
     connect(&process, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(processFinished(int,QProcess::ExitStatus)));
     connect(&process, SIGNAL(readyReadStandardOutput()), this, SLOT(processReadyReadStandardOutput()));
     connect(&process,SIGNAL(readyReadStandardError()),this,SLOT(processReadyReadStandardError()));
     connect(&process, SIGNAL(started()), this, SLOT(processStarted()));
+    connect(Logger::Object(), SIGNAL(addToLogger(QString)), this, SLOT(addToLogger(QString)));
 
-    Logger::setLogWidget(ui->txtLog);
+    connect(&tcpClient, SIGNAL(updateImage()), this, SLOT(updateImage()));
+    connect(&tcpClient, SIGNAL(addImageType(QString)), this, SLOT(addImageType(QString)));
+    tcpClient.start();
 
+    currentGitRepo = "https://github.com/AlexanderSilvaB/Mari.git";
     selectedRobot = "127.0.0.1";
     findToolchains();
     load();
@@ -34,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    tcpClient.stop();
     robotManager.stopSearch();
     delete ui;
 }
@@ -333,4 +340,51 @@ void MainWindow::on_btnCompile_clicked()
     QStringList arguments;
     arguments << "-c" << "cd "+ codeReleasePath + "; ./build.sh " + selectedToolchain;
     executeProcess(program, arguments);
+}
+
+void MainWindow::addToLogger(QString text)
+{
+    ui->txtLog->append(text);
+    ui->txtLog->moveCursor(QTextCursor::End);
+}
+
+void MainWindow::on_btnDownloadGithub_clicked()
+{
+    QString program = "bash";
+    QStringList arguments;
+    arguments << "-c" << "mkdir -p ~/RinobotCodeRelease; cd ~/RinobotCodeRelease; /usr/bin/git clone " + currentGitRepo;
+    executeProcess(program, arguments);
+    codeReleasePath = "~/RinobotCodeRelease/Mari";
+}
+
+void MainWindow::addImageType(QString name)
+{
+    if(ui->comboCameraImage->findText(name) < 0)
+        ui->comboCameraImage->addItem(name);
+}
+
+void MainWindow::updateImage()
+{
+    if(ui->mainTabs->currentWidget() != ui->tabCamera)
+        return;
+    //cvtColor(img, img, CV_BGR2RGB);
+    //QImage image(img.data, img.cols, img.rows, img.step, QImage::Format_RGB888);
+
+    uint8_t data[320*240*3];
+    int cols = 320;
+    int rows = 240;
+    int step = cols*3;
+    for(int i = 0; i < cols*rows*3; i++)
+        data[i] = rand() % 256;
+    QImage image(data, cols, rows, step, QImage::Format_RGB888);
+
+
+    QPixmap pixMap = QPixmap::fromImage(image);
+    //pixMap = pixMap.scaled(cols, rows, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    ui->lblCameraImage->setPixmap(pixMap);
+}
+
+void MainWindow::on_comboCameraImage_activated(const QString &arg1)
+{
+    tcpClient.setImageType(arg1);
 }

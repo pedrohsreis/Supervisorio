@@ -4,16 +4,22 @@
 #include <QTextEdit>
 #include "message.h"
 
-class Logger
+class Logger : public QObject
 {
+    Q_OBJECT
+
     private:
-        static QTextEdit *logWidget;
+        static Logger *logger;
         static void output(QString &text);
+        void callEmit(QString &text);
     public:
-        static void setLogWidget(QTextEdit *logWidget);
+        static void Init();
+        static Logger *Object();
         static void log(Message *message);
         static void log(QString text, int level = LEVEL_INFO);
 
+    signals:
+        void addToLogger(QString text);
 };
 
 #endif // LOGGER_H

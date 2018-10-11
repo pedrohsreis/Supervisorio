@@ -1,10 +1,11 @@
 #include "logger.h"
+#include <QDebug>
 
-QTextEdit *Logger::logWidget = NULL;
+Logger* Logger::logger = NULL;
 
-void Logger::setLogWidget(QTextEdit *logWidget)
+void Logger::Init()
 {
-    Logger::logWidget = logWidget;
+    logger = new Logger;
 }
 
 void Logger::log(Message *message)
@@ -42,9 +43,15 @@ void Logger::log(QString text, int level)
 
 void Logger::output(QString &text)
 {
-    logWidget->insertHtml(text);
+    logger->callEmit(text);
+}
 
-    QTextCursor cursor;
-    cursor.movePosition(QTextCursor::End);
-    logWidget->setTextCursor(cursor);
+Logger *Logger::Object()
+{
+    return logger;
+}
+
+void Logger::callEmit(QString &text)
+{
+    emit addToLogger(text);
 }

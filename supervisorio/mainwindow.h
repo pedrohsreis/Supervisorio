@@ -5,6 +5,7 @@
 #include <QProcess>
 #include <QCheckBox>
 #include "robotmanager.h"
+#include "tcpclient.h"
 
 namespace Ui {
 class MainWindow;
@@ -23,6 +24,9 @@ private slots:
     void 	processReadyReadStandardError();
     void 	processReadyReadStandardOutput();
     void 	processStarted();
+    void    addToLogger(QString text);
+    void    updateImage();
+    void    addImageType(QString name);
 
     void on_btnInstall_clicked();
 
@@ -38,6 +42,10 @@ private slots:
 
     void on_btnCompile_clicked();
 
+    void on_btnDownloadGithub_clicked();
+
+    void on_comboCameraImage_activated(const QString &arg1);
+
 private:
     void closeEvent(QCloseEvent *bar);
 
@@ -46,8 +54,10 @@ private:
     QString codeReleasePath;
     QString selectedRobot;
     QString selectedToolchain;
+    QString currentGitRepo;
 
     RobotManager robotManager;
+    TCPClient tcpClient;
 
     void load();
     QString loadSetting(QJsonObject &json, QString name, QString defaultValue);
