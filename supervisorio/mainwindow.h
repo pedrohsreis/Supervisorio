@@ -34,6 +34,10 @@ private slots:
 
     void on_btnAddRobot_clicked();
 
+    void on_btnSelectCodeRelease_clicked();
+
+    void on_btnCompile_clicked();
+
 private:
     void closeEvent(QCloseEvent *bar);
 

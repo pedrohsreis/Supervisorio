@@ -3,7 +3,9 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QFile>
+#include <QFileDialog>
 #include <QJsonDocument>
+#include <QProcess>
 #include <QJsonObject>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -307,4 +309,21 @@ void MainWindow::on_btnAddRobot_clicked()
     {
 
     }
+}
+
+void MainWindow::on_btnSelectCodeRelease_clicked()
+{
+    QString path = QFileDialog::getExistingDirectory(this, "Select path", "/home", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    if(path != NULL && path.length() > 0){
+        ui->teCodeRelease->setText(path);
+        codeReleasePath = path;
+    }
+}
+
+void MainWindow::on_btnCompile_clicked()
+{
+    QString program = "bash";
+    QStringList arguments;
+    arguments << "-c" << "cd "+ codeReleasePath + "; ./build.sh " + selectedToolchain;
+    executeProcess(program, arguments);
 }
