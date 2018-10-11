@@ -13,17 +13,15 @@ RobotManagerWorker::RobotManagerWorker(QList<Robot> *robots)
 
 void RobotManagerWorker::run()
 {
-    qDebug() << "doWork";
     while(keepRunning)
     {
-        QThread::sleep(1);
         if(search)
         {
             findAddress();
             clearRobots();
             emit resultReady();
         }
-        qDebug() << "Work";
+        QThread::sleep(10);
     }
 }
 
@@ -37,10 +35,14 @@ void RobotManagerWorker::findAddress()
 #endif
     process.waitForFinished();
     QString output(process.readAllStandardOutput());
+#ifdef Q_OS_WIN32
+    QStringList lines = output.split("\r\n", QString::SplitBehavior::SkipEmptyParts);
+#else
     QStringList lines = output.split("\n", QString::SplitBehavior::SkipEmptyParts);
+#endif
     for (int i = 0; i < lines.size(); i++)
     {
-        QString line = lines[i];
+        QString line = lines[i].trimmed();
         if(line.at(0).isDigit())
         {
             QString ip = line.left(line.indexOf(' '));
@@ -68,6 +70,7 @@ void RobotManagerWorker::createRobot(QString hostname, QString ip)
     }
     else
     {
+        (*robots)[index].hostName = hostname;
         (*robots)[index].updated = true;
     }
 }
@@ -161,13 +164,39 @@ void RobotManager::handleResults()
 {
     if(listWidget != nullptr)
     {
-        listWidget->clear();
         for(int i = 0; i < robots.size(); i++)
         {
-            QTreeWidgetItem *robot = new QTreeWidgetItem();
-            robot->setText(0, robots[i].hostName);
-            listWidget->addTopLevelItem(robot);
+            QList<QTreeWidgetItem*> items = listWidget->findItems(robots[i].ip, Qt::MatchFlag::MatchExactly, 1);
+            if(items.size() > 0)
+            {
+                items[0]->setText(0, robots[i].hostName);
+            }
+            else
+            {
+                QTreeWidgetItem *robot = new QTreeWidgetItem();
+                robot->setText(0, robots[i].hostName);
+                robot->setText(1, robots[i].ip);
+                listWidget->addTopLevelItem(robot);
+            }
         }
-        qDebug() << "Add";
+        QList<QTreeWidgetItem*> items = listWidget->findItems("*", Qt::MatchFlag::MatchWildcard, 0);
+        QList<QTreeWidgetItem*>::iterator it = items.begin();
+        bool remove = false;
+        while (it != items.end())
+        {
+            remove = true;
+            for(int i = 0; i < robots.size(); i++)
+            {
+                if((*it)->text(1) == robots[i].ip)
+                {
+                    remove = false;
+                    break;
+                }
+            }
+            if(remove)
+                it = items.erase(it);
+            else
+                it++;
+        }
     }
 }

@@ -30,7 +30,11 @@ private slots:
 
     void on_treeRobots_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
 
+    void on_comboToolchain_activated(const QString &arg1);
+
 private:
+    void closeEvent(QCloseEvent *bar);
+
     Ui::MainWindow *ui;
     QProcess process;
     QString codeReleasePath;
@@ -39,11 +43,18 @@ private:
 
     RobotManager robotManager;
 
+    void load();
+    QString loadSetting(QJsonObject &json, QString name, QString defaultValue);
+    void save();
+    void saveSetting(QJsonObject &json, QString name, QString value);
+
+
     void loadModules();
     void loadModule(QJsonObject &modules, QString moduleName, QCheckBox *checkbox);
     void saveModules();
     void saveModule(QJsonObject &modules, QString moduleName, QCheckBox *checkbox);
     void executeProcess(QString program, QStringList arguments);
+    void findToolchains();
 };
 
 #endif // MAINWINDOW_H

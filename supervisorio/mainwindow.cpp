@@ -17,14 +17,13 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&process,SIGNAL(readyReadStandardError()),this,SLOT(processReadyReadStandardError()));
     connect(&process, SIGNAL(started()), this, SLOT(processStarted()));
 
-    selectedRobot = "nao01.local";
-    selectedToolchain = "robo";
-    codeReleasePath = "/home/alexander/Development/Rinobot/Mari";
-
+    selectedRobot = "127.0.0.1";
+    findToolchains();
     loadModules();
 
     robotManager.setWidget(ui->treeRobots);
     robotManager.startSearch();
+
 }
 
 MainWindow::~MainWindow()
@@ -186,4 +185,117 @@ void MainWindow::on_treeRobots_currentItemChanged(QTreeWidgetItem *current, QTre
     else
         selectedRobot = "127.0.0.1";
     qDebug() << "Current robot:" << selectedRobot;
+}
+
+void MainWindow::findToolchains()
+{
+    ui->comboToolchain->clear();
+
+    QProcess process;
+    process.start("qitoolchain", QStringList() << "list");
+    process.waitForFinished();
+    QString output(process.readAllStandardOutput());
+#ifdef Q_OS_WIN32
+    QStringList lines = output.split("\r\n", QString::SplitBehavior::SkipEmptyParts);
+#else
+    QStringList lines = output.split("\n", QString::SplitBehavior::SkipEmptyParts);
+#endif
+    for (int i = 0; i < lines.size(); i++)
+    {
+        QString line = lines[i].trimmed();
+        if(line.at(0) == '*')
+        {
+            QString item = line.mid(line.indexOf('*')+1).trimmed();
+            ui->comboToolchain->addItem(item);
+        }
+    }
+    if(ui->comboToolchain->count() == 0)
+    {
+        ui->comboToolchain->addItem("Cannot find a toolchain");
+        ui->btnCompile->setEnabled(false);
+        ui->btnInstall->setEnabled(false);
+        ui->btnConfigure->setEnabled(false);
+        ui->btnClear->setEnabled(false);
+    }
+    ui->comboToolchain->setCurrentIndex(0);
+    selectedToolchain = ui->comboToolchain->currentText();
+    if(selectedToolchain.contains(' '))
+        selectedToolchain = "any";
+}
+
+void MainWindow::on_comboToolchain_activated(const QString &arg1)
+{
+    selectedToolchain = arg1;
+    if(selectedToolchain.contains(' '))
+        selectedToolchain = "any";
+    qDebug() << "Current toolchain: " << selectedToolchain;
+}
+
+void MainWindow::load()
+{
+    QFile readfile("settings.json");
+    if (!readfile.open(QIODevice::ReadOnly))
+    {
+        return;
+    }
+    QByteArray saveData = readfile.readAll();
+    readfile.close();
+
+
+    QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
+
+    QJsonObject json = loadDoc.object();
+
+    codeReleasePath = loadSetting(json, "codeReleasePath", "");
+    selectedToolchain = loadSetting(json, "toolchain", "any");
+    ui->comboToolchain->setCurrentText(selectedToolchain);
+    ui->teCodeRelease->setText(codeReleasePath);
+}
+
+QString MainWindow::loadSetting(QJsonObject &json, QString name, QString defaltValue)
+{
+    if(json.contains(name))
+        return json[name].toString();
+    return defaltValue;
+}
+
+void MainWindow::save()
+{
+    QJsonObject json;
+    QFile readfile("settings.json");
+    if (readfile.open(QIODevice::ReadOnly))
+    {
+        QByteArray saveData = readfile.readAll();
+        readfile.close();
+        QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
+        json = loadDoc.object();
+    }
+
+
+
+    // Motion
+    saveSetting(json, "codeReleasePath", codeReleasePath);
+    saveSetting(json, "toolchain", selectedToolchain);
+
+    QFile writefile("settings.json");
+    if (!writefile.open(QIODevice::WriteOnly))
+    {
+        return;
+    }
+    QJsonDocument saveDoc(json);
+    writefile.write(saveDoc.toJson());
+    writefile.close();
+}
+
+void MainWindow::saveSetting(QJsonObject &json, QString name, QString value)
+{
+    if(!json.contains(name))
+        json.insert(name, value);
+    else
+        json[name] = value;
+}
+
+void MainWindow::closeEvent(QCloseEvent *bar)
+{
+    save();
 }
