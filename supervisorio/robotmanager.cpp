@@ -3,6 +3,7 @@
 #include <QNetworkInterface>
 #include <QProcess>
 #include <QHostInfo>
+#include "logger.h"
 
 RobotManagerWorker::RobotManagerWorker(QList<Robot> *robots)
 {
@@ -182,6 +183,7 @@ void RobotManager::handleResults()
             if(items.size() > 0)
             {
                 items[0]->setText(0, robots[i].hostName);
+                Logger::log("Robot updated "+robots[i].hostName);
             }
             else
             {
@@ -189,6 +191,7 @@ void RobotManager::handleResults()
                 robot->setText(0, robots[i].hostName);
                 robot->setText(1, robots[i].ip);
                 listWidget->addTopLevelItem(robot);
+                Logger::log("Robot added "+robots[i].hostName);
             }
         }
         QList<QTreeWidgetItem*> items = listWidget->findItems("*", Qt::MatchFlag::MatchWildcard, 0);

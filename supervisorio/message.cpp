@@ -17,14 +17,23 @@ void Message::initMessage()
     message = "";
 }
 
+void Message::initLevel()
+{
+    level = LEVEL_INFO;
+}
+
 Message::Message()
 {
-
+    initId();
+    initDateTime();
+    initMessage();
+    initLevel();
 }
 
 Message::Message(long id)
 {
     this->id = id;
+    initLevel();
 }
 
 Message::Message(QString &message)
@@ -32,6 +41,7 @@ Message::Message(QString &message)
     initId();
     initDateTime();
     this->message = message;
+    initLevel();
 }
 
 Message::Message(long id, QString &message)
@@ -39,6 +49,7 @@ Message::Message(long id, QString &message)
     this->id = id;
     this->message = message;
     initDateTime();
+    initLevel();
 }
 
 Message::Message(QDateTime &dateTime, QString &message)
@@ -46,6 +57,7 @@ Message::Message(QDateTime &dateTime, QString &message)
     initId();
     this->dateTime = dateTime;
     this->message = message;
+    initLevel();
 }
 
 Message::Message(long id, QDateTime &dateTime, QString &message)
@@ -53,11 +65,22 @@ Message::Message(long id, QDateTime &dateTime, QString &message)
     this->id = id;
     this->dateTime = dateTime;
     this->message = message;
+    initLevel();
 }
 
 Message::~Message()
 {
 
+}
+
+void Message::setLevel(int level)
+{
+    this->level = level;
+}
+
+int Message::getLevel()
+{
+    return level;
 }
 
 void Message::setDateTime(QDateTime& dateTime)

@@ -16,11 +16,13 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     message.cpp \
-    robotmanager.cpp
+    robotmanager.cpp \
+    logger.cpp
 
 HEADERS  += mainwindow.h \
     robot.h \
     message.h \
-    robotmanager.h
+    robotmanager.h \
+    logger.h
 
 FORMS    += mainwindow.ui

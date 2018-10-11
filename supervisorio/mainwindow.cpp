@@ -7,6 +7,7 @@
 #include <QJsonDocument>
 #include <QProcess>
 #include <QJsonObject>
+#include "logger.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -18,6 +19,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&process, SIGNAL(readyReadStandardOutput()), this, SLOT(processReadyReadStandardOutput()));
     connect(&process,SIGNAL(readyReadStandardError()),this,SLOT(processReadyReadStandardError()));
     connect(&process, SIGNAL(started()), this, SLOT(processStarted()));
+
+    Logger::setLogWidget(ui->txtLog);
 
     selectedRobot = "127.0.0.1";
     findToolchains();
@@ -54,8 +57,11 @@ void MainWindow::processReadyReadStandardOutput()
 {
     QProcess *p = (QProcess *)sender();
     QByteArray buf = p->readAllStandardOutput();
+    QString text = QString::fromUtf8(buf.data());
 
-    qDebug() << buf;
+    qDebug() << text;
+
+    Logger::log(text, LEVEL_DEBUG);
 }
 
 void MainWindow::processStarted()
@@ -68,7 +74,7 @@ void MainWindow::loadModules()
     QFile readfile(codeReleasePath + "/root/home/nao/data/config.json");
     if (!readfile.open(QIODevice::ReadOnly))
     {
-        qWarning("Não foi possível atualizar os módulos");
+        Logger::log("Could not load the modules list");
         return;
     }
     QByteArray saveData = readfile.readAll();
@@ -110,7 +116,7 @@ void MainWindow::saveModules()
     QFile readfile(codeReleasePath + "/root/home/nao/data/config.json");
     if (!readfile.open(QIODevice::ReadOnly))
     {
-        qWarning("Não foi possível atualizar os módulos");
+        Logger::log("Could not load the modules list");
         return;
     }
     QByteArray saveData = readfile.readAll();
@@ -138,7 +144,7 @@ void MainWindow::saveModules()
     QFile writefile(codeReleasePath + "/root/home/nao/data/config.json");
     if (!writefile.open(QIODevice::WriteOnly))
     {
-        qWarning("Não foi possível atualizar os módulos");
+        Logger::log("Could not save the modules list");
         return;
     }
     QJsonDocument saveDoc(json);
@@ -187,7 +193,7 @@ void MainWindow::on_treeRobots_currentItemChanged(QTreeWidgetItem *current, QTre
         selectedRobot = current->text(0);
     else
         selectedRobot = "127.0.0.1";
-    qDebug() << "Current robot:" << selectedRobot;
+    Logger::log("Current robot: " + selectedRobot);
 }
 
 void MainWindow::findToolchains()
@@ -231,7 +237,7 @@ void MainWindow::on_comboToolchain_activated(const QString &arg1)
     selectedToolchain = arg1;
     if(selectedToolchain.contains(' '))
         selectedToolchain = "any";
-    qDebug() << "Current toolchain: " << selectedToolchain;
+    Logger::log("Current toolchain: " + selectedToolchain);
 }
 
 void MainWindow::load()
@@ -317,6 +323,7 @@ void MainWindow::on_btnSelectCodeRelease_clicked()
     if(path != NULL && path.length() > 0){
         ui->teCodeRelease->setText(path);
         codeReleasePath = path;
+        loadModules();
     }
 }
 
