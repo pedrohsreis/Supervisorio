@@ -14,10 +14,9 @@ class RobotManagerWorker : public QThread
     private:
         bool keepRunning, search;
         QList<Robot> *robots;
-        QList<QString> addresses;
 
         void findAddress();
-        void findRobots();
+        void checkRobot(QString ip);
         void createRobot(QString hostname, QString ip);
         int findRobotIndex(QString ip);
         void clearRobots();

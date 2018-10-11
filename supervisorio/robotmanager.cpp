@@ -20,7 +20,6 @@ void RobotManagerWorker::run()
         if(search)
         {
             findAddress();
-            findRobots();
             clearRobots();
             emit resultReady();
         }
@@ -30,43 +29,30 @@ void RobotManagerWorker::run()
 
 void RobotManagerWorker::findAddress()
 {
-    addresses.clear();
-    QList<QHostAddress> list = QNetworkInterface::allAddresses();
-    for(int nIter=0; nIter<list.count(); nIter++)
+    QProcess process;
+#ifdef Q_OS_WIN32
+    process.start("arp", QStringList() << "-a");
+#else
+    process.start("arp", QStringList() << "-e");
+#endif
+    process.waitForFinished();
+    QString output(process.readAllStandardOutput());
+    QStringList lines = output.split("\n", QString::SplitBehavior::SkipEmptyParts);
+    for (int i = 0; i < lines.size(); i++)
     {
-        if(!list[nIter].isLoopback())
-            if (list[nIter].protocol() == QAbstractSocket::IPv4Protocol )
-            {
-                QString address = list[nIter].toString();
-                QString base = address.left(address.lastIndexOf('.'));
-                //qDebug() << address;
-                //qDebug() << base;
-                addresses.append(base);
-            }
+        QString line = lines[i];
+        if(line.at(0).isDigit())
+        {
+            QString ip = line.left(line.indexOf(' '));
+            checkRobot(ip);
+        }
     }
 }
 
-void RobotManagerWorker::findRobots()
+void RobotManagerWorker::checkRobot(QString ip)
 {
-#if defined(WIN32)
-    QString parameter = "-n 1";
-#else
-    QString parameter = "-c 1";
-#endif
-    for(int i = 0; i < addresses.size(); i++)
-    {
-        QString base = addresses[i];
-        for(int j = 0; j < 11; j++)
-        {
-            QString ip = (base + ".%1").arg(j);
-            int exitCode = QProcess::execute("ping", QStringList() << parameter << ip);
-            if (exitCode == 0)
-            {
-                QHostInfo info = QHostInfo::fromName(ip);
-                createRobot(info.hostName(), ip);
-            }
-        }
-    }
+    QHostInfo info = QHostInfo::fromName(ip);
+    createRobot(info.hostName(), ip);
 }
 
 void RobotManagerWorker::createRobot(QString hostname, QString ip)
