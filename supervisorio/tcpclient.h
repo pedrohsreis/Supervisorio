@@ -2,6 +2,10 @@
 #define TCPCLIENT_H
 
 #include <QThread>
+#include <QTcpSocket>
+#include <QAbstractSocket>
+#include "message.h"
+#include "imagemessage.h"
 
 class TCPClient : public QThread
 {
@@ -9,20 +13,35 @@ class TCPClient : public QThread
 
     private:
         bool keepRunning;
+        int port;
+        QString address;
         QString imageType;
+        QTcpSocket *socket;
 
-        void processImage(QString imageType);
+        void processImage(ImageMessage &imageMessage);
     public:
         TCPClient();
         ~TCPClient();
 
         void stop();
         void setImageType(QString name);
+        void setPort(int port);
+
+        bool connectToHost(QString address);
+        bool disconnectFromHost();
+        bool isConnected();
+        bool send(Message *message);
 
         void run() override;
 
+    public slots:
+        void connected();
+        void disconnected();
+        void bytesWritten(qint64 bytes);
+        void readyRead();
+
     signals:
-        void updateImage();
+        void updateImage(ImageMessage imageMessage);
         void addImageType(QString name);
 };
 

@@ -25,7 +25,7 @@ private slots:
     void 	processReadyReadStandardOutput();
     void 	processStarted();
     void    addToLogger(QString text);
-    void    updateImage();
+    void    updateImage(ImageMessage imageMessage);
     void    addImageType(QString name);
 
     void on_btnInstall_clicked();
@@ -55,6 +55,7 @@ private:
     QString selectedRobot;
     QString selectedToolchain;
     QString currentGitRepo;
+    int tcpPort;
 
     RobotManager robotManager;
     TCPClient tcpClient;

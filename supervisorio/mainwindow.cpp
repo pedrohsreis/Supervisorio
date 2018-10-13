@@ -23,7 +23,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&process, SIGNAL(started()), this, SLOT(processStarted()));
     connect(Logger::Object(), SIGNAL(addToLogger(QString)), this, SLOT(addToLogger(QString)));
 
-    connect(&tcpClient, SIGNAL(updateImage()), this, SLOT(updateImage()));
+    qRegisterMetaType<ImageMessage>("ImageMessage");
+
+    tcpPort = 9572;
+
+    connect(&tcpClient, SIGNAL(updateImage(ImageMessage)), this, SLOT(updateImage(ImageMessage)));
     connect(&tcpClient, SIGNAL(addImageType(QString)), this, SLOT(addImageType(QString)));
     tcpClient.start();
 
@@ -32,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent) :
     findToolchains();
     load();
     loadModules();
+    tcpClient.setPort(tcpPort);
 
     robotManager.setWidget(ui->treeRobots);
     robotManager.startSearch();
@@ -201,6 +206,7 @@ void MainWindow::on_treeRobots_currentItemChanged(QTreeWidgetItem *current, QTre
     else
         selectedRobot = "127.0.0.1";
     Logger::log("Current robot: " + selectedRobot);
+    tcpClient.connectToHost(selectedRobot);
 }
 
 void MainWindow::findToolchains()
@@ -264,6 +270,7 @@ void MainWindow::load()
 
     codeReleasePath = loadSetting(json, "codeReleasePath", "");
     selectedToolchain = loadSetting(json, "toolchain", "any");
+    tcpPort = loadSetting(json, "tcpPort", "9572").toInt();
     ui->comboToolchain->setCurrentText(selectedToolchain);
     ui->teCodeRelease->setText(codeReleasePath);
 }
@@ -291,6 +298,7 @@ void MainWindow::save()
 
     saveSetting(json, "codeReleasePath", codeReleasePath);
     saveSetting(json, "toolchain", selectedToolchain);
+    saveSetting(json, "tcpPort", QString::number(tcpPort));
 
     QFile writefile("settings.json");
     if (!writefile.open(QIODevice::WriteOnly))
@@ -363,22 +371,24 @@ void MainWindow::addImageType(QString name)
         ui->comboCameraImage->addItem(name);
 }
 
-void MainWindow::updateImage()
+void MainWindow::updateImage(ImageMessage imageMessage)
 {
     if(ui->mainTabs->currentWidget() != ui->tabCamera)
         return;
-    //cvtColor(img, img, CV_BGR2RGB);
-    //QImage image(img.data, img.cols, img.rows, img.step, QImage::Format_RGB888);
 
-    uint8_t data[320*240*3];
-    int cols = 320;
-    int rows = 240;
-    int step = cols*3;
-    for(int i = 0; i < cols*rows*3; i++)
-        data[i] = rand() % 256;
-    QImage image(data, cols, rows, step, QImage::Format_RGB888);
-
-
+    QImage::Format format = QImage::Format_RGB888;
+    switch (imageMessage.getImageType())
+    {
+        case IMAGE_TYPE_GRAY:
+            format = QImage::Format_Grayscale8;
+            break;
+        case IMAGE_TYPE_YUV:
+            format = QImage::Format_RGB444;
+            break;
+        default:
+            break;
+    }
+    QImage image(imageMessage.getData(), imageMessage.getWidth(), imageMessage.getHeight(), imageMessage.getStep(), format);
     QPixmap pixMap = QPixmap::fromImage(image);
     //pixMap = pixMap.scaled(cols, rows, Qt::KeepAspectRatio, Qt::SmoothTransformation);
     ui->lblCameraImage->setPixmap(pixMap);

@@ -18,6 +18,7 @@ void RobotManagerWorker::run()
     {
         if(search)
         {
+            broadcast();
             findAddress();
             if(!manualRobot.isNull() && !manualRobot.isEmpty())
             {
@@ -28,6 +29,23 @@ void RobotManagerWorker::run()
             emit resultReady();
         }
         QThread::sleep(2);
+    }
+}
+
+void RobotManagerWorker::broadcast()
+{
+    QProcess process;
+    QList<QHostAddress> list = QNetworkInterface::allAddresses();
+    for(int nIter=0; nIter<list.count(); nIter++)
+    {
+        if(!list[nIter].isLoopback())
+            if (list[nIter].protocol() == QAbstractSocket::IPv4Protocol )
+            {
+                QString address = list[nIter].toString();
+                QString base = address.left(address.lastIndexOf('.'));
+                process.start("ping", QStringList() << "-b" << "-c" << "4" << (base+".255"));
+                process.waitForFinished();
+            }
     }
 }
 
