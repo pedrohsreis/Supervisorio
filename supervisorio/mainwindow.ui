@@ -499,6 +499,9 @@
                        <property name="enabled">
                         <bool>true</bool>
                        </property>
+                       <property name="maximum">
+                        <number>100</number>
+                       </property>
                        <property name="orientation">
                         <enum>Qt::Horizontal</enum>
                        </property>
@@ -519,6 +522,9 @@
                      </item>
                      <item>
                       <widget class="QSlider" name="sliderCameraSaturation">
+                       <property name="maximum">
+                        <number>100</number>
+                       </property>
                        <property name="orientation">
                         <enum>Qt::Horizontal</enum>
                        </property>
@@ -539,6 +545,9 @@
                      </item>
                      <item>
                       <widget class="QSlider" name="sliderCameraContrast">
+                       <property name="maximum">
+                        <number>100</number>
+                       </property>
                        <property name="orientation">
                         <enum>Qt::Horizontal</enum>
                        </property>
@@ -559,6 +568,9 @@
                      </item>
                      <item>
                       <widget class="QSlider" name="sliderCameraSharpness">
+                       <property name="maximum">
+                        <number>100</number>
+                       </property>
                        <property name="orientation">
                         <enum>Qt::Horizontal</enum>
                        </property>

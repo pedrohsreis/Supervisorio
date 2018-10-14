@@ -8,6 +8,7 @@
 #include <QProcess>
 #include <QJsonObject>
 #include "logger.h"
+#include "camerasettingmessage.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -29,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(&tcpClient, SIGNAL(updateImage(ImageMessage)), this, SLOT(updateImage(ImageMessage)));
     connect(&tcpClient, SIGNAL(addImageType(QString)), this, SLOT(addImageType(QString)));
-    tcpClient.start();
+    connect(&tcpClient, SIGNAL(cameraSetting(int, int)), this, SLOT(cameraSetting(int, int)));
 
     currentGitRepo = "https://github.com/AlexanderSilvaB/Mari.git";
     selectedRobot = "127.0.0.1";
@@ -45,7 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    tcpClient.stop();
+    tcpClient.disconnectFromHost();
     robotManager.stopSearch();
     delete ui;
 }
@@ -369,6 +370,11 @@ void MainWindow::addImageType(QString name)
 {
     if(ui->comboCameraImage->findText(name) < 0)
         ui->comboCameraImage->addItem(name);
+    if(ui->comboCameraImage->count() == 1)
+    {
+        tcpClient.setImageType(name);
+        ui->comboCameraImage->setCurrentIndex(0);
+    }
 }
 
 void MainWindow::updateImage(ImageMessage imageMessage)
@@ -397,4 +403,72 @@ void MainWindow::updateImage(ImageMessage imageMessage)
 void MainWindow::on_comboCameraImage_activated(const QString &arg1)
 {
     tcpClient.setImageType(arg1);
+}
+
+void MainWindow::on_sliderCameraBrightness_valueChanged(int value)
+{
+    CameraSettingMessage message(SETTING_BRIGHTNESS, value);
+    tcpClient.send(&message);
+}
+
+void MainWindow::on_sliderCameraSaturation_valueChanged(int value)
+{
+    CameraSettingMessage message(SETTING_SATURATION, value);
+    tcpClient.send(&message);
+}
+
+void MainWindow::on_sliderCameraContrast_valueChanged(int value)
+{
+    CameraSettingMessage message(SETTING_CONTRAST, value);
+    tcpClient.send(&message);
+}
+
+void MainWindow::on_sliderCameraSharpness_valueChanged(int value)
+{
+    CameraSettingMessage message(SETTING_SHARPNESS, value);
+    tcpClient.send(&message);
+}
+
+void MainWindow::on_edRobotIp_returnPressed()
+{
+    QString ip = ui->edRobotIp->text();
+    if(!robotManager.addRobot(ip))
+    {
+
+    }
+}
+
+void MainWindow::cameraSetting(int setting, int value)
+{
+    switch (setting)
+    {
+        case SETTING_BRIGHTNESS:
+            ui->sliderCameraBrightness->setValue(value);
+            break;
+        case SETTING_CONTRAST:
+            ui->sliderCameraContrast->setValue(value);
+            break;
+        case SETTING_SATURATION:
+            ui->sliderCameraSaturation->setValue(value);
+            break;
+        case SETTING_SHARPNESS:
+            ui->sliderCameraSharpness->setValue(value);
+            break;
+        default:
+            break;
+    }
+}
+
+void MainWindow::on_btnBoxCamera_clicked(QAbstractButton *button)
+{
+    if(button->text() == "Save")
+    {
+        CameraSettingMessage message(SETTING_SAVE, 1);
+        tcpClient.send(&message);
+    }
+    else if(button->text() == "Discard")
+    {
+        CameraSettingMessage message(SETTING_DISCARD, 1);
+        tcpClient.send(&message);
+    }
 }

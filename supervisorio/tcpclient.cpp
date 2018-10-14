@@ -1,30 +1,22 @@
 #include <QAbstractSocket>
 #include "tcpclient.h"
 #include "logger.h"
+#include "camerasettingmessage.h"
 
 TCPClient::TCPClient()
 {
-    keepRunning = true;
     imageType = "";
     port = 9572;
     socket = new QTcpSocket(this);
     connect(socket, SIGNAL(connected()), this, SLOT(connected()));
     connect(socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
     connect(socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
-    connect(socket, SIGNAL(bytesWritten(qint64)), this, SLOT(bytesWritten(qint64)));
 
 }
 
 TCPClient::~TCPClient()
 {
-    keepRunning = false;
-}
-
-void TCPClient::stop()
-{
-    keepRunning = false;
-    quit();
-    wait();
+    delete socket;
 }
 
 void TCPClient::setImageType(QString name)
@@ -40,22 +32,14 @@ void TCPClient::setPort(int port)
 
 void TCPClient::processImage(ImageMessage &imageMessage)
 {
+    if(!imageTypes.contains(imageMessage.getName()))
+    {
+        imageTypes.append(imageMessage.getName());
+        emit addImageType(imageMessage.getName());
+    }
     if(imageType.isEmpty() || imageType == imageMessage.getName())
     {
         emit updateImage(imageMessage);
-    }
-}
-
-void TCPClient::run()
-{
-    emit addImageType("Raw YUV");
-    emit addImageType("Raw RGB");
-
-    while(keepRunning)
-    {
-        ImageMessage imageMessage("Raw RGB", 320, 240, IMAGE_TYPE_RGB);
-        processImage(imageMessage);
-        QThread::msleep(30);
     }
 }
 
@@ -108,18 +92,11 @@ bool TCPClient::send(Message *message)
 void TCPClient::connected()
 {
     Logger::log("Connected to "+address+":"+QString::number(port));
-
-    //socket->write("HEAD / HTTP/1.0\r\n\r\n\r\n\r\n");
 }
 
 void TCPClient::disconnected()
 {
     Logger::log("Disconnected from "+address+":"+QString::number(port));
-}
-
-void TCPClient::bytesWritten(qint64 bytes)
-{
-    Logger::log("We wrote: " + QString::number(bytes));
 }
 
 void TCPClient::readyRead()
@@ -128,11 +105,32 @@ void TCPClient::readyRead()
     Message message;
     int skipSize = message.decode(data);
     if(skipSize == 0)
-        Logger::log("Invalid message received");
+    {
+        //Logger::log("Invalid message received");
+    }
     else
     {
-        Logger::log("Received: " + message.toString());
+        switch (message.getType())
+        {
+            case TYPE_IMAGE:
+            {
+                ImageMessage imageMessage;
+                imageMessage.decode(data);
+                processImage(imageMessage);
+                //Logger::log("Received: " + imageMessage.toString());
+            }
+                break;
+            case TYPE_CAM_SETTING:
+            {
+                CameraSettingMessage camMessage;
+                camMessage.decode(data);
+                emit cameraSetting(camMessage.getSetting(), camMessage.getValue());
+            }
+                break;
+            default:
+                //Logger::log("Received: " + message.toString());
+                break;
+        }
     }
 }
-
 

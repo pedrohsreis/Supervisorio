@@ -2,6 +2,7 @@
 #define MESSAGE_H
 
 #include <QDateTime>
+#include <QDataStream>
 
 #define TYPE(x) ((int)x)
 

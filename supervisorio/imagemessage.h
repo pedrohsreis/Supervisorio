@@ -33,8 +33,11 @@ class ImageMessage : public Message
         int getHeight();
         int getImageType();
         int getStep();
+        int getDataSize();
 
         QString toString();
+        int decode(QByteArray &data);
+        int encode(QByteArray &data);
 
 
 

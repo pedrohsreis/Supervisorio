@@ -43,7 +43,7 @@ void RobotManagerWorker::broadcast()
             {
                 QString address = list[nIter].toString();
                 QString base = address.left(address.lastIndexOf('.'));
-                process.start("ping", QStringList() << "-b" << "-c" << "4" << (base+".255"));
+                process.start("ping", QStringList() << "-b" << "-c" << "1" << (base+".255"));
                 process.waitForFinished();
             }
     }
@@ -51,6 +51,7 @@ void RobotManagerWorker::broadcast()
 
 void RobotManagerWorker::findAddress()
 {
+    checkRobot("127.0.0.1");
     QProcess process;
 #ifdef Q_OS_WIN32
     process.start("arp", QStringList() << "-a");

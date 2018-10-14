@@ -136,23 +136,25 @@ QString Message::toString()
 
 int Message::decode(QByteArray &data)
 {
+    int sz = 0;
     if(data.size() < 4)
-        return 0;
+        return sz;
     char *ptr = data.data();
     if(!(ptr[0] == 'R' && ptr[1] == 'I' && ptr[2] == 'N' && ptr[3] == 'O'))
-        return 0;
-    int sz = 4;
+        return sz;
+    sz += 4;
     QDataStream stream(data);
     stream.skipRawData(4);
     stream >> type;
-    sz += 4;
+    sz += sizeof (type);
     stream >> level;
-    sz += 4;
+    sz += sizeof (level);
     int msgLen;
     stream >> msgLen;
-    sz += msgLen;
+    sz += sizeof (msgLen);
     char *str = new char[msgLen+1];
     stream.readRawData(str, msgLen);
+    sz += msgLen;
     str[msgLen] = '\0';
     message = QString(str);
     return sz;
@@ -160,5 +162,12 @@ int Message::decode(QByteArray &data)
 
 int Message::encode(QByteArray &data)
 {
-    return 0;
+    QDataStream stream(&data, QIODevice::ReadWrite);
+    const char *init = "RINO";
+    stream.writeRawData(init, 4);
+    stream << type;
+    stream << level;
+    stream << message.length();
+    stream.writeRawData(message.toStdString().c_str(), message.length());
+    return data.size();
 }

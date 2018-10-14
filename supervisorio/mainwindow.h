@@ -27,6 +27,7 @@ private slots:
     void    addToLogger(QString text);
     void    updateImage(ImageMessage imageMessage);
     void    addImageType(QString name);
+    void    cameraSetting(int setting, int value);
 
     void on_btnInstall_clicked();
 
@@ -45,6 +46,18 @@ private slots:
     void on_btnDownloadGithub_clicked();
 
     void on_comboCameraImage_activated(const QString &arg1);
+
+    void on_sliderCameraBrightness_valueChanged(int value);
+
+    void on_sliderCameraSaturation_valueChanged(int value);
+
+    void on_sliderCameraContrast_valueChanged(int value);
+
+    void on_sliderCameraSharpness_valueChanged(int value);
+
+    void on_edRobotIp_returnPressed();
+
+    void on_btnBoxCamera_clicked(QAbstractButton *button);
 
 private:
     void closeEvent(QCloseEvent *bar);

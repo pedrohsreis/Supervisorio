@@ -7,23 +7,22 @@
 #include "message.h"
 #include "imagemessage.h"
 
-class TCPClient : public QThread
+class TCPClient : public QObject
 {
     Q_OBJECT
 
     private:
-        bool keepRunning;
         int port;
         QString address;
         QString imageType;
         QTcpSocket *socket;
+        QStringList imageTypes;
 
         void processImage(ImageMessage &imageMessage);
     public:
         TCPClient();
         ~TCPClient();
 
-        void stop();
         void setImageType(QString name);
         void setPort(int port);
 
@@ -32,17 +31,15 @@ class TCPClient : public QThread
         bool isConnected();
         bool send(Message *message);
 
-        void run() override;
-
     public slots:
         void connected();
         void disconnected();
-        void bytesWritten(qint64 bytes);
         void readyRead();
 
     signals:
         void updateImage(ImageMessage imageMessage);
         void addImageType(QString name);
+        void cameraSetting(int setting, int value);
 };
 
 #endif // TCPCLIENT_H

@@ -18,8 +18,9 @@ SOURCES += main.cpp\
     message.cpp \
     robotmanager.cpp \
     logger.cpp \
+    imagemessage.cpp \
     tcpclient.cpp \
-    imagemessage.cpp
+    camerasettingmessage.cpp
 
 HEADERS  += mainwindow.h \
     robot.h \
@@ -27,6 +28,7 @@ HEADERS  += mainwindow.h \
     robotmanager.h \
     logger.h \
     tcpclient.h \
-    imagemessage.h
+    imagemessage.h \
+    camerasettingmessage.h
 
 FORMS    += mainwindow.ui
