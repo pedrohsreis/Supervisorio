@@ -73,6 +73,7 @@ private:
     QString selectedToolchain;
     QString currentGitRepo;
     int tcpPort;
+    bool installed;
 
     RobotManager robotManager;
     TCPClient tcpClient;

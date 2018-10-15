@@ -218,6 +218,17 @@ void MainWindow::on_treeRobots_currentItemChanged(QTreeWidgetItem *current, QTre
 
 void MainWindow::findToolchains()
 {
+    #ifdef Q_OS_WIN32
+    ui->comboToolchain->addItem("Cannot find a toolchain");
+    ui->btnCompile->setEnabled(false);
+    ui->btnInstall->setEnabled(false);
+    ui->btnConfigure->setEnabled(false);
+    ui->btnUninstall->setEnabled(false);
+    ui->btnClear->setEnabled(false);
+    ui->comboToolchain->setEnabled(false);
+    ui->tabActions->setEnabled(false);
+    #else
+    ui->lbWindows->deleteLater();
     ui->comboToolchain->clear();
 
     QProcess process;
@@ -250,6 +261,7 @@ void MainWindow::findToolchains()
     selectedToolchain = ui->comboToolchain->currentText();
     if(selectedToolchain.contains(' '))
         selectedToolchain = "any";
+    #endif
 }
 
 void MainWindow::on_comboToolchain_activated(const QString &arg1)
@@ -280,6 +292,18 @@ void MainWindow::load()
     tcpPort = loadSetting(json, "tcpPort", "9572").toInt();
     ui->comboToolchain->setCurrentText(selectedToolchain);
     ui->teCodeRelease->setText(codeReleasePath);
+
+    installed = loadSetting(json, "installed", "false") == "true";
+    if(!installed)
+    {
+        QMessageBox msgBox;
+        msgBox.setText("Install");
+        msgBox.setInformativeText("You need some tools installed to use this software. You can install it running the 'requirements.sh' bundled with this software.");
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setDefaultButton(QMessageBox::Ok);
+        int ret = msgBox.exec();
+        installed = true;
+    }
 }
 
 QString MainWindow::loadSetting(QJsonObject &json, QString name, QString defaltValue)
@@ -306,6 +330,7 @@ void MainWindow::save()
     saveSetting(json, "codeReleasePath", codeReleasePath);
     saveSetting(json, "toolchain", selectedToolchain);
     saveSetting(json, "tcpPort", QString::number(tcpPort));
+    saveSetting(json, "installed", installed ? "true" : "false");
 
     QFile writefile("settings.json");
     if (!writefile.open(QIODevice::WriteOnly))
