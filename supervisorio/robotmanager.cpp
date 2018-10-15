@@ -18,7 +18,6 @@ void RobotManagerWorker::run()
     {
         if(search)
         {
-            broadcast();
             findAddress();
             if(!manualRobot.isNull() && !manualRobot.isEmpty())
             {
@@ -27,6 +26,7 @@ void RobotManagerWorker::run()
             }
             clearRobots();
             emit resultReady();
+            QThread::sleep(30);
         }
         QThread::sleep(2);
     }
@@ -51,12 +51,12 @@ void RobotManagerWorker::broadcast()
 
 void RobotManagerWorker::findAddress()
 {
-    checkRobot("127.0.0.1");
     QProcess process;
 #ifdef Q_OS_WIN32
+    broadcast();
     process.start("arp", QStringList() << "-a");
 #else
-    process.start("arp", QStringList() << "-e");
+    process.start("avahi-browse", QStringList() << "-at");
 #endif
     process.waitForFinished();
     QString output(process.readAllStandardOutput());
@@ -68,11 +68,22 @@ void RobotManagerWorker::findAddress()
     for (int i = 0; i < lines.size(); i++)
     {
         QString line = lines[i].trimmed();
+        #ifdef Q_OS_WIN32
         if(line.length() > 0 && line.at(0).isDigit())
         {
             QString ip = line.left(line.indexOf(' '));
             checkRobot(ip);
         }
+        #else
+        QStringList parts = line.split(" ", QString::SplitBehavior::SkipEmptyParts);
+        if(parts.length() > 5)
+        {
+            if(parts[2] == "IPv4" && !parts[3].contains("@") && parts[4] == "_naoqi._tcp")
+            {
+                checkRobot(parts[3]+".local");
+            }
+        }
+        #endif
     }
 }
 

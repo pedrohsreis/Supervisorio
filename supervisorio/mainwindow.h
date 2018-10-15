@@ -59,6 +59,10 @@ private slots:
 
     void on_btnBoxCamera_clicked(QAbstractButton *button);
 
+    void on_btnConfigure_clicked();
+
+    void on_btnClear_clicked();
+
 private:
     void closeEvent(QCloseEvent *bar);
 

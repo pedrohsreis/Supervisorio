@@ -23,7 +23,7 @@ void Logger::log(Message *message)
             base = "<font color='#e0ac00'>W [%1] <b>%2</b></font>";
             break;
         case LEVEL_ERROR:
-            base = "<font color='c90000'>E [%1] <b>%2</b></font>";
+            base = "<font color='#c90000'>E [%1] <b>%2</b></font>";
             break;
         default:
             base = "<font color='#219e27'>I [%1] <b>%2</b></font>";

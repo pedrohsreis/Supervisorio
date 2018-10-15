@@ -64,6 +64,12 @@ void MainWindow::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
 void MainWindow::processReadyReadStandardError()
 {
     qDebug() << "ReadyError";
+    QProcess *p = (QProcess *)sender();
+    QByteArray buf = p->readAllStandardOutput();
+    QString text = QString::fromUtf8(buf.data());
+
+    qDebug() << text;
+    Logger::log(text, LEVEL_ERROR);
 }
 
 void MainWindow::processReadyReadStandardOutput()
@@ -186,8 +192,8 @@ void MainWindow::on_btnInstall_clicked()
 void MainWindow::on_btnUninstall_clicked()
 {
     QMessageBox msgBox;
-    msgBox.setText("Desinstalar");
-    msgBox.setInformativeText("Você realmente deseja efetuar a desinstalação em " + selectedRobot + "?");
+    msgBox.setText("Uninstall");
+    msgBox.setInformativeText("Do you really want to uninstall on " + selectedRobot + "?");
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
     msgBox.setDefaultButton(QMessageBox::Cancel);
     int ret = msgBox.exec();
@@ -195,7 +201,7 @@ void MainWindow::on_btnUninstall_clicked()
     {
         QString program = "bash";
         QStringList arguments;
-        arguments << "-c" << "cd "+ codeReleasePath + "; ./sync.sh " + selectedRobot + " " + selectedToolchain + "-uninstall";
+        arguments << "-c" << "cd "+ codeReleasePath + "; ./sync.sh " + selectedRobot + " " + selectedToolchain + " -uninstall";
         executeProcess(program, arguments);
     }
 }
@@ -470,5 +476,30 @@ void MainWindow::on_btnBoxCamera_clicked(QAbstractButton *button)
     {
         CameraSettingMessage message(SETTING_DISCARD, 1);
         tcpClient.send(&message);
+    }
+}
+
+void MainWindow::on_btnConfigure_clicked()
+{
+    QString program = "bash";
+    QStringList arguments;
+    arguments << "-c" << "cd "+ codeReleasePath + "; ./build.sh " + selectedToolchain + " -configure";
+    executeProcess(program, arguments);
+}
+
+void MainWindow::on_btnClear_clicked()
+{
+    QMessageBox msgBox;
+    msgBox.setText("Clear");
+    msgBox.setInformativeText("Do you really want to clear the build for " + selectedToolchain + "?");
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
+    msgBox.setDefaultButton(QMessageBox::Cancel);
+    int ret = msgBox.exec();
+    if(ret == QMessageBox::Yes)
+    {
+        QString program = "bash";
+        QStringList arguments;
+        arguments << "-c" << "cd "+ codeReleasePath + "; ./sync.sh " + selectedRobot + " " + selectedToolchain + " -clear";
+        executeProcess(program, arguments);
     }
 }
