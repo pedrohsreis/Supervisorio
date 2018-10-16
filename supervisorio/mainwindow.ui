@@ -250,7 +250,7 @@
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>643</width>
+                      <width>635</width>
                       <height>157</height>
                      </rect>
                     </property>
@@ -895,7 +895,7 @@
                 <item>
                  <widget class="QGroupBox" name="gBMensagens">
                   <property name="title">
-                   <string>Mensagens:</string>
+                   <string>Messages</string>
                   </property>
                   <layout class="QVBoxLayout" name="verticalLayout">
                    <item>
@@ -903,12 +903,18 @@
                      <property name="text">
                       <string>TCP</string>
                      </property>
+                     <property name="checked">
+                      <bool>true</bool>
+                     </property>
                     </widget>
                    </item>
                    <item>
                     <widget class="QCheckBox" name="chkUDP">
                      <property name="text">
                       <string>UDP</string>
+                     </property>
+                     <property name="checked">
+                      <bool>true</bool>
                      </property>
                     </widget>
                    </item>
@@ -918,13 +924,16 @@
                 <item>
                  <widget class="QGroupBox" name="gbLevel">
                   <property name="title">
-                   <string>Level:</string>
+                   <string>Level</string>
                   </property>
                   <layout class="QGridLayout" name="gridLayout_8">
                    <item row="0" column="1">
                     <widget class="QCheckBox" name="chkWarning">
                      <property name="text">
                       <string>Warning</string>
+                     </property>
+                     <property name="checked">
+                      <bool>true</bool>
                      </property>
                     </widget>
                    </item>
@@ -940,12 +949,18 @@
                      <property name="text">
                       <string>Debug</string>
                      </property>
+                     <property name="checked">
+                      <bool>true</bool>
+                     </property>
                     </widget>
                    </item>
                    <item row="1" column="1">
                     <widget class="QCheckBox" name="chkError">
                      <property name="text">
                       <string>Error</string>
+                     </property>
+                     <property name="checked">
+                      <bool>true</bool>
                      </property>
                     </widget>
                    </item>

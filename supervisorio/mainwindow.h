@@ -66,8 +66,6 @@ private slots:
 
     void on_chkDebug_clicked(bool checked);
 
-    void on_chkUDP_clicked(bool checked);
-
 private:
     void closeEvent(QCloseEvent *bar);
 
