@@ -13,6 +13,7 @@ typedef struct
     int wifiSignal;
     bool wifiConnected;
     bool updated;
+    bool manual;
 }Robot;
 
 #endif // ROBOT_H

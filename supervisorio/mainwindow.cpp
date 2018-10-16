@@ -185,7 +185,7 @@ void MainWindow::on_btnInstall_clicked()
     saveModules();
     QString program = "bash";
     QStringList arguments;
-    arguments << "-c" << "cd "+ codeReleasePath + "; ./sync.sh " + selectedRobot + " " + selectedToolchain;
+    arguments << "-c" << "cd "+ codeReleasePath + "; ./sync.sh " + selectedRobot + " " + selectedToolchain + (ui->chkAll->isChecked() ? " -all" : "");
     executeProcess(program, arguments);
 }
 

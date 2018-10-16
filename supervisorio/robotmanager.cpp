@@ -21,7 +21,7 @@ void RobotManagerWorker::run()
             findAddress();
             if(!manualRobot.isNull() && !manualRobot.isEmpty())
             {
-                checkRobot(manualRobot);
+                checkRobot(manualRobot, true);
                 manualRobot = "";
             }
             clearRobots();
@@ -80,21 +80,21 @@ void RobotManagerWorker::findAddress()
         {
             if(parts[2] == "IPv4" && !parts[3].contains("@") && parts[4] == "_naoqi._tcp")
             {
-                checkRobot(parts[3]+".local");
+                checkRobot(parts[3]+".local", false);
             }
         }
         #endif
     }
 }
 
-void RobotManagerWorker::checkRobot(QString ip)
+void RobotManagerWorker::checkRobot(QString ip, bool manual)
 {
     QHostInfo info = QHostInfo::fromName(ip);
     if(info.addresses().size() > 0)
-        createRobot(info.hostName(), info.addresses().first().toString());
+        createRobot(info.hostName(), info.addresses().first().toString(), manual);
 }
 
-void RobotManagerWorker::createRobot(QString hostname, QString ip)
+void RobotManagerWorker::createRobot(QString hostname, QString ip, bool manual)
 {
     int index = findRobotIndex(ip);
     if(index == -1)
@@ -103,6 +103,7 @@ void RobotManagerWorker::createRobot(QString hostname, QString ip)
         robot.ip = ip;
         robot.hostName = hostname;
         robot.updated = true;
+        robot.manual = manual;
         robots->append(robot);
     }
     else

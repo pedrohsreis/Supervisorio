@@ -19,8 +19,8 @@ class RobotManagerWorker : public QThread
 
         void broadcast();
         void findAddress();
-        void checkRobot(QString ip);
-        void createRobot(QString hostname, QString ip);
+        void checkRobot(QString ip, bool manual);
+        void createRobot(QString hostname, QString ip, bool manual);
         int findRobotIndex(QString ip);
         void clearRobots();
     public:
