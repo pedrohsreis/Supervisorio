@@ -2,11 +2,14 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>875</width>
+    <width>953</width>
     <height>643</height>
    </rect>
   </property>
@@ -247,7 +250,7 @@
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>565</width>
+                      <width>643</width>
                       <height>157</height>
                      </rect>
                     </property>
@@ -872,6 +875,91 @@
            <attribute name="title">
             <string>UDP/TCP Messages</string>
            </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_7">
+            <property name="leftMargin">
+             <number>1</number>
+            </property>
+            <property name="topMargin">
+             <number>1</number>
+            </property>
+            <property name="rightMargin">
+             <number>1</number>
+            </property>
+            <property name="bottomMargin">
+             <number>1</number>
+            </property>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_4">
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_6">
+                <item>
+                 <widget class="QGroupBox" name="gBMensagens">
+                  <property name="title">
+                   <string>Mensagens:</string>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout">
+                   <item>
+                    <widget class="QCheckBox" name="chkTCP">
+                     <property name="text">
+                      <string>TCP</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QCheckBox" name="chkUDP">
+                     <property name="text">
+                      <string>UDP</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QGroupBox" name="gbLevel">
+                  <property name="title">
+                   <string>Level:</string>
+                  </property>
+                  <layout class="QGridLayout" name="gridLayout_8">
+                   <item row="0" column="1">
+                    <widget class="QCheckBox" name="chkWarning">
+                     <property name="text">
+                      <string>Warning</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="0">
+                    <widget class="QCheckBox" name="chkInfo">
+                     <property name="text">
+                      <string>Info</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QCheckBox" name="chkDebug">
+                     <property name="text">
+                      <string>Debug</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="1">
+                    <widget class="QCheckBox" name="chkError">
+                     <property name="text">
+                      <string>Error</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <widget class="QTextEdit" name="txtMensagem"/>
+              </item>
+             </layout>
+            </item>
+           </layout>
           </widget>
           <widget class="QWidget" name="tabCamera">
            <attribute name="title">
@@ -1308,7 +1396,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>875</width>
+     <width>953</width>
      <height>22</height>
     </rect>
    </property>

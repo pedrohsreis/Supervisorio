@@ -128,6 +128,7 @@ void TCPClient::readyRead()
             }
                 break;
             default:
+                emit messageReceived(message);
                 //Logger::log("Received: " + message.toString());
                 break;
         }

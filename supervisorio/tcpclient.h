@@ -40,6 +40,8 @@ class TCPClient : public QObject
         void updateImage(ImageMessage imageMessage);
         void addImageType(QString name);
         void cameraSetting(int setting, int value);
+        void messageReceived(Message msg);
+
 };
 
 #endif // TCPCLIENT_H

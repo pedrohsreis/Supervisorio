@@ -25,6 +25,7 @@ private slots:
     void 	processReadyReadStandardOutput();
     void 	processStarted();
     void    addToLogger(QString text);
+    void    messageReceived(Message msg);
     void    updateImage(ImageMessage imageMessage);
     void    addImageType(QString name);
     void    cameraSetting(int setting, int value);
@@ -62,6 +63,10 @@ private slots:
     void on_btnConfigure_clicked();
 
     void on_btnClear_clicked();
+
+    void on_chkDebug_clicked(bool checked);
+
+    void on_chkUDP_clicked(bool checked);
 
 private:
     void closeEvent(QCloseEvent *bar);

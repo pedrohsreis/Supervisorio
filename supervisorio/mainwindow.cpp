@@ -25,12 +25,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(Logger::Object(), SIGNAL(addToLogger(QString)), this, SLOT(addToLogger(QString)));
 
     qRegisterMetaType<ImageMessage>("ImageMessage");
+    qRegisterMetaType<Message>("Message");
 
     tcpPort = 9572;
 
     connect(&tcpClient, SIGNAL(updateImage(ImageMessage)), this, SLOT(updateImage(ImageMessage)));
     connect(&tcpClient, SIGNAL(addImageType(QString)), this, SLOT(addImageType(QString)));
     connect(&tcpClient, SIGNAL(cameraSetting(int, int)), this, SLOT(cameraSetting(int, int)));
+    connect(&tcpClient, SIGNAL(messageReceived(Message)), this, SLOT(messageReceived(Message)));
 
     currentGitRepo = "https://github.com/AlexanderSilvaB/Mari.git";
     selectedRobot = "127.0.0.1";
@@ -387,6 +389,41 @@ void MainWindow::addToLogger(QString text)
     ui->txtLog->append(text);
     ui->txtLog->moveCursor(QTextCursor::End);
 }
+void MainWindow::messageReceived(Message msg)
+{
+    if(ui->chkTCP->isChecked()){
+        bool add = false;
+        QString base = "";
+        switch (msg.getLevel())
+        {
+            case LEVEL_INFO:
+                base = "<font color='#219e27'>I [%1] <b>%2</b></font>";
+                add |= ui->chkInfo->isChecked();
+                break;
+            case LEVEL_DEBUG:
+                base = "<font color='#162a99'>D [%1] <b>%2</b></font>";
+                add |= ui->chkDebug->isChecked();
+                break;
+            case LEVEL_WARNING:
+                base = "<font color='#e0ac00'>W [%1] <b>%2</b></font>";
+                add |= ui->chkWarning->isChecked();
+                break;
+            case LEVEL_ERROR:
+                base = "<font color='#c90000'>E [%1] <b>%2</b></font>";
+                add |= ui->chkError->isChecked();
+                break;
+            default:
+                return;
+        }
+        QString dateTime = msg.getDateTime().toString("hh:mm:ss dd/MM/yyyy");
+        QString text = base.arg(dateTime, msg.toString());
+        if(add)
+        {
+            ui->txtMensagem->append(text);
+            ui->txtMensagem->moveCursor(QTextCursor::End);
+        }
+    }
+}
 
 void MainWindow::on_btnDownloadGithub_clicked()
 {
@@ -528,3 +565,4 @@ void MainWindow::on_btnClear_clicked()
         executeProcess(program, arguments);
     }
 }
+

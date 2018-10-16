@@ -93,6 +93,7 @@ void TCPServer::sendMessage(int msgType)
             QString str("Random number: ");
             str += QString::number(rand());
             Message message(str);
+            message.setLevel((rand() % 4)+1);
             QByteArray data;
             message.encode(data);
             client->write(data);
