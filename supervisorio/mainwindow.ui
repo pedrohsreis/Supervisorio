@@ -138,7 +138,7 @@
            <bool>true</bool>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="tabActions">
            <attribute name="title">
@@ -250,7 +250,7 @@
                      <rect>
                       <x>0</x>
                       <y>0</y>
-                      <width>635</width>
+                      <width>643</width>
                       <height>157</height>
                      </rect>
                     </property>
@@ -1037,6 +1037,23 @@
                      </rect>
                     </property>
                     <layout class="QVBoxLayout" name="verticalLayout_6">
+                     <item>
+                      <widget class="QComboBox" name="comboCamera">
+                       <property name="currentIndex">
+                        <number>1</number>
+                       </property>
+                       <item>
+                        <property name="text">
+                         <string>Bottom</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Top</string>
+                        </property>
+                       </item>
+                      </widget>
+                     </item>
                      <item>
                       <widget class="QLabel" name="label">
                        <property name="sizePolicy">

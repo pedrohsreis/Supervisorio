@@ -54,6 +54,9 @@ QString CameraSettingMessage::toString()
         case SETTING_DISCARD:
             st = "discard";
             break;
+        case SETTING_NUMBER:
+            st = "number";
+            break;
         default:
             break;
     }

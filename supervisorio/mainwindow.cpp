@@ -566,3 +566,11 @@ void MainWindow::on_btnClear_clicked()
     }
 }
 
+
+void MainWindow::on_comboCamera_activated(const QString &arg1)
+{
+    int value;
+    value = (arg1 == "Top")? 1:0;
+    CameraSettingMessage message(SETTING_NUMBER, value);
+    tcpClient.send(&message);
+}

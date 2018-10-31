@@ -64,7 +64,7 @@ private slots:
 
     void on_btnClear_clicked();
 
-    void on_chkDebug_clicked(bool checked);
+    void on_comboCamera_activated(const QString &arg1);
 
 private:
     void closeEvent(QCloseEvent *bar);

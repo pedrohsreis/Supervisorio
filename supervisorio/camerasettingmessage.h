@@ -12,6 +12,8 @@
 #define SETTING_SHARPNESS 3
 #define SETTING_SAVE 98
 #define SETTING_DISCARD 99
+#define SETTING_NUMBER 50
+
 
 class CameraSettingMessage : public Message
 {
