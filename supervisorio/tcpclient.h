@@ -13,10 +13,13 @@ class TCPClient : public QObject
 
     private:
         int port;
+        int inSize;
+        QByteArray inData;
         QString address;
         QString imageType;
         QTcpSocket *socket;
         QStringList imageTypes;
+        char infoDataRaw[8];
 
         void processImage(ImageMessage &imageMessage);
     public:

@@ -1,5 +1,6 @@
 #include <QDataStream>
 #include "message.h"
+#include <QtDebug>
 
 void Message::initId()
 {
@@ -144,6 +145,7 @@ int Message::decode(QByteArray &data)
         return sz;
     sz += 4;
     QDataStream stream(data);
+    stream.setByteOrder(QDataStream::LittleEndian);
     stream.skipRawData(4);
     stream >> type;
     sz += sizeof (type);
@@ -154,6 +156,8 @@ int Message::decode(QByteArray &data)
     sz += sizeof (msgLen);
     char *str = new char[msgLen+1];
     stream.readRawData(str, msgLen);
+    for(int i = 0; i < msgLen; i++)
+        qDebug() << str[i] << " - " << (int)str[i];
     sz += msgLen;
     str[msgLen] = '\0';
     message = QString(str);
@@ -163,6 +167,7 @@ int Message::decode(QByteArray &data)
 int Message::encode(QByteArray &data)
 {
     QDataStream stream(&data, QIODevice::ReadWrite);
+    stream.setByteOrder(QDataStream::LittleEndian);
     const char *init = "RINO";
     stream.writeRawData(init, 4);
     stream << type;

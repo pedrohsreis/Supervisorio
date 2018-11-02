@@ -64,7 +64,7 @@ private slots:
 
     void on_btnClear_clicked();
 
-    void on_chkDebug_clicked(bool checked);
+    void on_treeRobots_itemPressed(QTreeWidgetItem *item, int column);
 
 private:
     void closeEvent(QCloseEvent *bar);

@@ -1,5 +1,6 @@
 #include "imagemessage.h"
 #include <QDataStream>
+#include <QDebug>
 
 ImageMessage::ImageMessage() : Message ()
 {
@@ -100,10 +101,12 @@ int ImageMessage::decode(QByteArray &data)
 {
     int sz = Message::decode(data);
     QDataStream stream(data);
+    stream.setByteOrder(QDataStream::LittleEndian);
     stream.skipRawData(sz);
 
     int nameLen;
     stream >> nameLen;
+    qDebug() << nameLen;
     sz += sizeof(nameLen);
     char *str = new char[nameLen+1];
     stream.readRawData(str, nameLen);
@@ -144,6 +147,7 @@ int ImageMessage::encode(QByteArray &data)
 {
     int sz = Message::encode(data);
     QDataStream stream(&data, QIODevice::ReadWrite);
+    stream.setByteOrder(QDataStream::LittleEndian);
     stream.skipRawData(sz);
     stream << name.length();
     stream.writeRawData(name.toStdString().c_str(), name.length());

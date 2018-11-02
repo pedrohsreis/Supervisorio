@@ -138,7 +138,7 @@
            <bool>true</bool>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="tabActions">
            <attribute name="title">
@@ -1056,7 +1056,7 @@
                         <bool>true</bool>
                        </property>
                        <property name="maximum">
-                        <number>100</number>
+                        <number>255</number>
                        </property>
                        <property name="orientation">
                         <enum>Qt::Horizontal</enum>
@@ -1079,7 +1079,7 @@
                      <item>
                       <widget class="QSlider" name="sliderCameraSaturation">
                        <property name="maximum">
-                        <number>100</number>
+                        <number>255</number>
                        </property>
                        <property name="orientation">
                         <enum>Qt::Horizontal</enum>
@@ -1101,8 +1101,11 @@
                      </item>
                      <item>
                       <widget class="QSlider" name="sliderCameraContrast">
+                       <property name="minimum">
+                        <number>16</number>
+                       </property>
                        <property name="maximum">
-                        <number>100</number>
+                        <number>64</number>
                        </property>
                        <property name="orientation">
                         <enum>Qt::Horizontal</enum>
@@ -1125,7 +1128,7 @@
                      <item>
                       <widget class="QSlider" name="sliderCameraSharpness">
                        <property name="maximum">
-                        <number>100</number>
+                        <number>255</number>
                        </property>
                        <property name="orientation">
                         <enum>Qt::Horizontal</enum>

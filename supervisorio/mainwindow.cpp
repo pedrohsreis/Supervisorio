@@ -210,10 +210,14 @@ void MainWindow::on_btnUninstall_clicked()
 
 void MainWindow::on_treeRobots_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
-    if(current != nullptr)
-        selectedRobot = current->text(0);
-    else
-        selectedRobot = "127.0.0.1";
+
+}
+
+void MainWindow::on_treeRobots_itemPressed(QTreeWidgetItem *item, int column)
+{
+    if(tcpClient.isConnected())
+        tcpClient.disconnectFromHost();
+    selectedRobot = item->text(0);
     Logger::log("Current robot: " + selectedRobot);
     tcpClient.connectToHost(selectedRobot);
 }
@@ -565,4 +569,3 @@ void MainWindow::on_btnClear_clicked()
         executeProcess(program, arguments);
     }
 }
-

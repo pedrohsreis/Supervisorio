@@ -64,6 +64,7 @@ int CameraSettingMessage::decode(QByteArray &data)
 {
     int sz = Message::decode(data);
     QDataStream stream(data);
+    stream.setByteOrder(QDataStream::LittleEndian);
     stream.skipRawData(sz);
 
     stream >> setting;
@@ -77,6 +78,7 @@ int CameraSettingMessage::encode(QByteArray &data)
 {
     int sz = Message::encode(data);
     QDataStream stream(&data, QIODevice::ReadWrite);
+    stream.setByteOrder(QDataStream::LittleEndian);
     stream.skipRawData(sz);
     stream << setting;
     stream << value;

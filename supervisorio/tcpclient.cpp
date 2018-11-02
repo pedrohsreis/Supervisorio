@@ -7,7 +7,12 @@ TCPClient::TCPClient()
 {
     imageType = "";
     port = 9572;
+    inSize = 0;
     socket = new QTcpSocket(this);
+    infoDataRaw[0] = 'R';
+    infoDataRaw[1] = 'I';
+    infoDataRaw[2] = 'N';
+    infoDataRaw[3] = 'O';
     connect(socket, SIGNAL(connected()), this, SLOT(connected()));
     connect(socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
     connect(socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
@@ -79,6 +84,9 @@ bool TCPClient::send(Message *message)
     if(message->encode(data) > 0)
     {
         Logger::log("Sending: "+message->toString());
+        ((int*)(infoDataRaw + 4))[0] = data.size();
+        socket->write(infoDataRaw, 8);
+        QThread::msleep(10);
         socket->write(data);
         return true;
     }
@@ -102,36 +110,64 @@ void TCPClient::disconnected()
 void TCPClient::readyRead()
 {
     QByteArray data = socket->readAll();
-    Message message;
-    int skipSize = message.decode(data);
-    if(skipSize == 0)
+    process:
+    if(inSize == 0)
     {
-        //Logger::log("Invalid message received");
-    }
-    else
-    {
-        switch (message.getType())
+        char *ptr = data.data();
+        if(ptr[0] == 'R' && ptr[1] == 'I' && ptr[2] == 'N' && ptr[3] == 'O')
         {
-            case TYPE_IMAGE:
-            {
-                ImageMessage imageMessage;
-                imageMessage.decode(data);
-                processImage(imageMessage);
-                //Logger::log("Received: " + imageMessage.toString());
-            }
-                break;
-            case TYPE_CAM_SETTING:
-            {
-                CameraSettingMessage camMessage;
-                camMessage.decode(data);
-                emit cameraSetting(camMessage.getSetting(), camMessage.getValue());
-            }
-                break;
-            default:
-                emit messageReceived(message);
-                //Logger::log("Received: " + message.toString());
-                break;
+            inSize = ((int*)(ptr + 4))[0];
+            qDebug() << "InSize: " << inSize;
+            data.remove(0, 8);
         }
     }
+    if(inData.size() < inSize && data.size() > 0)
+    {
+        int rm = 0;
+        for(int i = 0; i < data.size() && inData.size() < inSize; i++)
+        {
+            inData.append(data.at(i));
+            rm++;
+        }
+        data.remove(0, rm);
+    }
+    if(inData.size() == inSize)
+    {
+        Message message;
+        int skipSize = message.decode(inData);
+        if(skipSize == 0)
+        {
+            Logger::log("Invalid message received");
+        }
+        else
+        {
+            switch (message.getType())
+            {
+                case TYPE_IMAGE:
+                {
+                    ImageMessage imageMessage;
+                    imageMessage.decode(inData);
+                    processImage(imageMessage);
+                    Logger::log("Received: " + imageMessage.toString());
+                }
+                    break;
+                case TYPE_CAM_SETTING:
+                {
+                    CameraSettingMessage camMessage;
+                    camMessage.decode(inData);
+                    emit cameraSetting(camMessage.getSetting(), camMessage.getValue());
+                }
+                    break;
+                default:
+                    emit messageReceived(message);
+                    Logger::log("Received: " + message.toString());
+                    break;
+            }
+        }
+        inData.clear();
+        inSize = 0;
+    }
+    if(data.size() > 0)
+        goto process;
 }
 
